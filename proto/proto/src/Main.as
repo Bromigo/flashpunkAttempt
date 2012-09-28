@@ -1,27 +1,19 @@
 package 
 {
-	import flash.display.Sprite;
-	import flash.events.Event;
+	import net.flashpunk.Engine;
+	import net.flashpunk.FP;
 	
-	/**
-	 * ...
-	 * @author Josh
-	 */
-	public class Main extends Sprite 
-	{
+	public class Main extends Engine {
 		
-		public function Main():void 
-		{
-			if (stage) init();
-			else addEventListener(Event.ADDED_TO_STAGE, init);
+		public function Main():void {
+			super(800, 600, 60, false);
+			//enable debug console (toggle w/ ~)
+			FP.console.enable();
 		}
 		
-		private function init(e:Event = null):void 
-		{
-			removeEventListener(Event.ADDED_TO_STAGE, init);
-			// entry point
+		override public function init():void {
+			trace("Flashpunk started");
+			FP.world = new DebugWorld;
 		}
-		
 	}
-	
 }
