@@ -8,10 +8,11 @@ package{
 	import flash.display.BitmapData;  //to create BitmapData
 	import flash.geom.Point; //to create Point
 	
+	
 	public class Player extends Entity{
 		//gfx
 		private var img:Image;
-		private var offset:Point = new Point(6,8);
+		private var offset:Point = new Point(25,18);
 		//mask
 		private var maskBmp:BitmapData;
 		private var maskObj:Pixelmask;
@@ -21,7 +22,7 @@ package{
 		private var angleRad:Number=0;
 		
 		//movement
-		private var walkSpeed:Number=2.5;
+		private var walkSpeed:Number=4;
 		
 		//Constructor function
 		public function Player(){
@@ -49,7 +50,16 @@ package{
 		override public function update():void{
 			angleDeg=FP.angle(x, y, Input.mouseX, Input.mouseY);
 			face_mouse(angleDeg);
-			move();
+			//movement
+			if( Input.check("forward")||Input.check("back")
+		      ||Input.check("right")  ||Input.check("left")){
+				move();
+			}
+			//M1 (fire)
+			if (Input.mousePressed){
+				fire();
+			}
+			
 		}
 		
 			
@@ -83,6 +93,16 @@ package{
 				y += (walkSpeed*2/3) * Math.sin(angleRad) * -1;				
 			}			
 		}
+		
+		private function fire():void{
+			//determine x,y,angle,speed (18 is distance from origin to gun's end)
+			angleRad = angleDeg * Math.PI /180;
+			var _x:Number = x - 19 * Math.cos(angleRad) * -1;
+			var _y:Number = y + 19 * Math.sin(angleRad) * -1;
 			
+			
+			FP.world.add(new Bullet(_x,_y,angleDeg,80)); //the 80 is currently bullet vel
+		}
+		
 	}	
 }
