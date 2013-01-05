@@ -4,10 +4,11 @@ package
 	import net.flashpunk.FP; //flashpunk utilities	
 	import flash.system.Capabilities; //to check for debug mode
 	
+	[SWF(width = "600", height = "600")]
 	public class Main extends Engine {
 		
 		public function Main():void {
-			super(800, 600, 60, false);
+			super(600, 600, 60, false);
 			if(Capabilities.isDebugger){
 				//enable debug console (toggle w/ ~)
 				FP.console.enable();

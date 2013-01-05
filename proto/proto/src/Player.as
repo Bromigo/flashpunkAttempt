@@ -3,10 +3,10 @@ package{
 	import net.flashpunk.FP; //to access various stuff
 	import net.flashpunk.utils.Input; //for movement
 	
-	import net.flashpunk.graphics.Image; //to create Image
-	import net.flashpunk.masks.Pixelmask; //to create Pixelmask
-	import flash.display.BitmapData;  //to create BitmapData
-	import flash.geom.Point; //to create Point
+	import net.flashpunk.graphics.Image;
+	import net.flashpunk.masks.Pixelmask;
+	import flash.display.BitmapData;
+	import flash.geom.Point;
 	
 	
 	public class Player extends Entity{
@@ -23,38 +23,46 @@ package{
 		
 		//movement
 		private var walkSpeed:Number=4;
-		
+
 		//Constructor function
 		public function Player(){
+			collidable = true;
+			layer = 1;
+			//start position
 			x=400;
 			y=300;
 			
 			img = new Image(GC.GFX_PLAYER);
 			
+			//set origin point to center of player's head
 			img.originX=offset.x;
 			img.originY=offset.y;
 			
-			//size is the maximum size of the outer hitbox that the pixelmask fits into
-			var size:int=Math.ceil(Math.sqrt(img.width * img.width + img.height * img.height));
-			//the following lines create the pixelmap
-			maskBmp = new BitmapData(size, size, true, 0);
-			maskObj = new Pixelmask(maskBmp, -offset.x, -offset.y);
-			//unkown what next line does. appears to work when it is commented out. but what the hell, i'll keep it
-			img.render(maskBmp,offset,FP.zero);
-			//draw image to screen, and apply mask
-			super(x,y,img,maskObj);
-			
-			collidable= true;
+			/* Mask code
+				//size is the maximum size of the outer hitbox that the pixelmask fits into
+				var size:int=Math.ceil(Math.sqrt(img.width * img.width + img.height * img.height));
+				
+				//the following lines create the pixelmap
+				maskBmp = new BitmapData(size, size, true, 0);
+				maskObj = new Pixelmask(maskBmp, -offset.x, -offset.y);
+
+				//draw image to screen, and apply mask
+				super(x,y,img,maskObj);
+			*/
+			super(x,y,img);
 		}
 		
 		override public function update():void{
-			angleDeg=FP.angle(x, y, Input.mouseX, Input.mouseY);
-			face_mouse(angleDeg);
+			//angleDeg=FP.angle(x, y, Input.mouseX+FP.camera.x, Input.mouseY+FP.camera.y);
+			face_mouse();
 			//movement
 			if( Input.check("forward")||Input.check("back")
 		      ||Input.check("right")  ||Input.check("left")){
 				move();
 			}
+			
+			Camera.update(angleDeg,x,y);
+			
 			//M1 (fire)
 			if (Input.mousePressed){
 				fire();
@@ -63,12 +71,18 @@ package{
 		}
 		
 			
-		public function face_mouse(degrees:Number):void {
-			img.angle = degrees;
-			maskBmp.fillRect(maskBmp.rect,0);
-			FP.point.x=offset.x;
-			FP.point.y=offset.y;
-			img.render(maskBmp,FP.point,FP.zero);
+		public function face_mouse():void {
+			//determine angle
+			angleDeg=FP.angle(x, y, Input.mouseX+FP.camera.x, Input.mouseY+FP.camera.y);
+			//rotate image
+			img.angle = angleDeg;
+			
+			/* The following is tied to the MASK
+				maskBmp.fillRect(maskBmp.rect,0);
+				FP.point.x=offset.x;
+				FP.point.y=offset.y;
+				img.render(maskBmp,FP.point,FP.zero);
+			*/
 		}
 		
 		public function move():void{
@@ -91,7 +105,7 @@ package{
 				angleRad = (angleDeg +90) * Math.PI / 180;
 				x -= (walkSpeed*2/3) * Math.cos(angleRad) * -1;
 				y += (walkSpeed*2/3) * Math.sin(angleRad) * -1;				
-			}			
+			}
 		}
 		
 		private function fire():void{
@@ -104,5 +118,5 @@ package{
 			FP.world.add(new Bullet(_x,_y,angleDeg,80)); //the 80 is currently bullet vel
 		}
 		
-	}	
+	}
 }

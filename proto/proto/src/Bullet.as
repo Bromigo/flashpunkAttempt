@@ -21,12 +21,17 @@ package{
 		private var angleRad:Number;
 		private var speed:Number;
 		
+		private var timer:int;
+		
 		
 		//constructor
 		public function Bullet(x:int,y:int,dir:Number,sp:Number){
+			layer = 1;
 			angleDeg=dir;
 			angleRad=dir *Math.PI/180;
 			speed=sp;
+			
+			timer = 0;
 			
 			img = new Image(GC.GFX_BULLET);
 			img.originX=offset.x;
@@ -46,6 +51,9 @@ package{
 		}
 		
 		override public function update():void{
+			//bullets removed after 5sec
+			(timer > 300) ? (FP.world.remove(this)) : timer++;
+			
 			move();
 		}
 		
@@ -53,8 +61,6 @@ package{
 				x -= speed * Math.cos(angleRad) * -1;
 				y += speed * Math.sin(angleRad) * -1;			
 		}
-		
-		
 		
 	}
 }
